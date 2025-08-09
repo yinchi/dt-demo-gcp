@@ -1,0 +1,9 @@
+{
+    "recommendations": [
+        "github.copilot",
+        "ms-python.python",
+        "bierner.github-markdown-preview",
+        "yahyabatulu.vscode-markdown-alert",
+        "tamasfe.even-better-toml"
+    ]
+}

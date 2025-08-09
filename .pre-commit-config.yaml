@@ -1,0 +1,31 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v5.0.0
+  hooks:
+  - id: trailing-whitespace
+  - id: end-of-file-fixer
+  - id: check-yaml
+- repo: https://github.com/pycqa/isort
+  rev: 6.0.1
+  hooks:
+  - id: isort
+    types_or: [python, pyi]
+    args: ['--settings-path', './configs/.isort.cfg']
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  rev: v0.12.8
+  hooks:
+  - id: ruff-check
+    types_or: [python, pyi]
+    args: ['--fix', '--config', './configs/ruff.toml']
+  - id: ruff-format
+    types_or: [python, pyi]
+    args: ['--config', './configs/ruff.toml']
+- repo: https://github.com/igorshubovych/markdownlint-cli
+  rev: v0.45.0
+  hooks:
+  - id: markdownlint
+    types: [markdown]
+    language_version: 20.18.0  # Specify Node.js version
+    args: ['--config', './configs/.markdownlint.yaml']

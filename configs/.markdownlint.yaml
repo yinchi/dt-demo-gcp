@@ -1,0 +1,2 @@
+# Disable max line length, we use soft wraps in .vscode/settings.json
+MD013: false
