@@ -4,6 +4,20 @@
 
 set -euo pipefail
 
+# Check whether $XDG_DATA_HOME is unset, set to the default value, or set to a non-default value
+# See related VS Code issue: https://github.com/microsoft/vscode/issues/237608
+if [ "${XDG_DATA_HOME:-}" == "$HOME/.local/share" ]; then
+    echo "✅ XDG_DATA_HOME is set to the default value: $HOME/.local/share."
+elif [ -z "${XDG_DATA_HOME:-}" ]; then
+    echo "✅ XDG_DATA_HOME is unset, thus using the default value: $HOME/.local/share."
+else
+    echo "❌ XDG_DATA_HOME is set to '$XDG_DATA_HOME' and not equal to $HOME/.local/share."
+    echo "   This often happens when running the script in a VS Code terminal installed via Snap."
+    echo "   Consider reinstalling VS Code via your package manager (e.g., apt)."
+    echo "   Also, make sure to unset XDG_DATA_HOME if it is set manually."
+    exit 1
+fi
+
 echo "------------------------------------------------"
 echo "0. Checking for prerequisite packages..."
 echo "------------------------------------------------"
@@ -22,7 +36,7 @@ fi
 
 # Check for `curl` command, and install via APT if not found
 if ! command -v curl &> /dev/null; then
-    echo "curl is not installed. Installing curl..."
+    echo "🛠️ curl is not installed. Installing curl..."
     if ! sudo apt-get -yqq install curl; then
         echo "❌ Failed to install curl. Please install it manually."
         exit 1
@@ -43,7 +57,7 @@ echo ""
 if ! command -v gum &> /dev/null; then
     # APT package manager
     if command -v apt &> /dev/null; then
-        echo "Installing gum using apt..."
+        echo "🛠️ Installing gum using apt..."
         sudo mkdir -p /etc/apt/keyrings
         curl -fsSL https://repo.charm.sh/apt/gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/charm.gpg
         echo "✅ Charm GPG key added successfully."
@@ -81,11 +95,31 @@ fi
 
 # Check for `git root` alias
 if ! git config --get alias.root &> /dev/null; then
-    gum log "❗️ Setting up git alias 'root' to point to the repository root..."
+    gum log "🛠️ Setting up git alias 'root' to point to the repository root..."
     git config --global alias.root 'rev-parse --show-toplevel'
     gum log "✅ Git alias 'root' set up successfully."
 else
     gum log "✅ Git alias 'root' already exists."
+fi
+
+### Project-specific git aliases ###
+
+# Check for `git cdroot` alias
+if ! git config --get alias.cdroot &> /dev/null; then
+    gum log "🛠️ Setting up git alias 'cdroot' to change directory to the repository root..."
+    git config alias.cdroot '!cd $(git rev-parse --show-toplevel)'
+    gum log "✅ Git alias 'cdroot' set up successfully."
+else
+    gum log "✅ Git alias 'cdroot' already exists."
+fi
+
+# `git summary`: Summary of the current repo status
+if ! git config --get alias.summary &> /dev/null; then
+    gum log "🛠️ Setting up git alias 'summary' to show the current repo status..."
+    git config alias.summary '!git status -sb'
+    gum log "✅ Git alias 'summary' set up successfully."
+else
+    gum log "✅ Git alias 'summary' already exists."
 fi
 
 # Check if the current directory is a git repository
@@ -94,11 +128,15 @@ if ! git rev-parse --is-inside-work-tree &> /dev/null; then
     exit 1
 fi
 
+echo
+gum log "✅ Git aliases set up successfully.  You can check them with 'git config -l | grep alias.'"
+echo
+
 # `cd` to the git repository root (we already checked for the `git root` alias)
 # Note: script will return to the original directory after execution (if run directly
 # instead of sourced)
 cd "$(git root)" > /dev/null
-gum log "✅ Moving to git repository root at $(git root)..."
+gum log "🛠️ Moving to git repository root at $(git root)..."
 
 # Check git config for `user.name` and `user.email`
 if ! git config --get user.name &> /dev/null; then
@@ -139,16 +177,6 @@ if ! command -v uv &> /dev/null; then
     fi
 else
     gum log "✅ uv already installed."
-fi
-
-# Set UV_TOOL_BIN_DIR environment variable in .bashrc if not already set
-if [ -z "${UV_TOOL_BIN_DIR:-}" ]; then
-    # Set the variable to the default path
-    export UV_TOOL_BIN_DIR="$HOME/.local/bin"  # Export to the current shell
-    echo "export UV_TOOL_BIN_DIR=\"$UV_TOOL_BIN_DIR\"" >> "$HOME/.bashrc"  # Append to .bashrc
-    gum log "Setting UV_TOOL_BIN_DIR to default path: $UV_TOOL_BIN_DIR"
-else
-    gum log "✅ UV_TOOL_BIN_DIR is already set to: $UV_TOOL_BIN_DIR"
 fi
 
 # npm, Node.js package manager
