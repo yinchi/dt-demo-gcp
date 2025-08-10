@@ -259,3 +259,19 @@ if ! python3 -c "import git" &> /dev/null; then
 else
     echo "✅ python3-git already installed."
 fi
+
+# Check for `yq`, used to manipulate YAML files
+if ! command -v yq -V &> /dev/null; then
+    echo "❗️ yq is not installed.  Installing yq..."
+    if ! (gum spin --title "Installing yq..." -- \
+          curl -fsSLO https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 \
+          && sudo install -m755 yq_linux_amd64 /usr/local/bin/yq \
+          && rm yq_linux_amd64); then
+        echo "❌ Failed to install yq. Please install it manually."
+        exit 1
+    else
+        echo "✅ yq installed successfully."
+    fi
+else
+    echo "✅ yq already installed."
+fi

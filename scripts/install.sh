@@ -54,7 +54,7 @@ case $package in
             gum log "✅ Minikube is already installed."
         else
             gum log "🛠️  Installing Minikube..."
-            if ! (curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube_latest_amd64.deb \
+            if ! (curl -fsSLO https://storage.googleapis.com/minikube/releases/latest/minikube_latest_amd64.deb \
                 && sudo dpkg -i minikube_latest_amd64.deb \
                 && rm minikube_latest_amd64.deb
             ); then
@@ -69,7 +69,7 @@ case $package in
             gum log "Skipping K9s installation."
         else
             gum log "🛠️  Installing or updating K9s..."
-            if ! curl -LO https://github.com/derailed/k9s/releases/latest/download/k9s_linux_amd64.deb && sudo apt install ./k9s_linux_amd64.deb && rm k9s_linux_amd64.deb; then
+            if ! curl -fsSLO https://github.com/derailed/k9s/releases/latest/download/k9s_linux_amd64.deb && sudo apt install ./k9s_linux_amd64.deb && rm k9s_linux_amd64.deb; then
                 gum log "❌ Failed to install K9s."
                 exit 1
             else
