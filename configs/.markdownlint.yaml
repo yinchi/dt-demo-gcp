@@ -1,2 +1,6 @@
 # Disable max line length, we use soft wraps in .vscode/settings.json
 MD013: false
+
+# Allow both fenced and indented code blocks as different extensions (e.g. `admonition`)
+# may expect different formats
+MD046: false
