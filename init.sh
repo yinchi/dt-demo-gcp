@@ -154,35 +154,11 @@ else
     gum log "✅ Git alias 'root' already exists."
 fi
 
-### Project-specific git aliases ###
-
-# Check for `git cdroot` alias
-if ! git config --get alias.cdroot &> /dev/null; then
-    gum log "🛠️ Setting up git alias 'cdroot' to change directory to the repository root..."
-    git config alias.cdroot '!cd $(git rev-parse --show-toplevel)'
-    gum log "✅ Git alias 'cdroot' set up successfully."
-else
-    gum log "✅ Git alias 'cdroot' already exists."
-fi
-
-# `git summary`: Summary of the current repo status
-if ! git config --get alias.summary &> /dev/null; then
-    gum log "🛠️ Setting up git alias 'summary' to show the current repo status..."
-    git config alias.summary '!git status -sb'
-    gum log "✅ Git alias 'summary' set up successfully."
-else
-    gum log "✅ Git alias 'summary' already exists."
-fi
-
 # Check if the current directory is a git repository
 if ! git rev-parse --is-inside-work-tree &> /dev/null; then
     gum log "❌ This directory is not a git repository. Please run this script inside a git repository."
     exit 1
 fi
-
-echo
-gum log "✅ Git aliases set up successfully.  You can check them with 'git config -l | grep alias.'"
-echo
 
 # `cd` to the git repository root (we already checked for the `git root` alias)
 # Note: script will return to the original directory after execution (if run directly
