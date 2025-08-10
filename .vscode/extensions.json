@@ -5,6 +5,7 @@
         "bierner.github-markdown-preview",
         "yahyabatulu.vscode-markdown-alert",
         "tamasfe.even-better-toml",
-        "tomasdahlqvist.markdown-admonitions"
+        "tomasdahlqvist.markdown-admonitions",
+        "mhutchie.git-graph"
     ]
 }
