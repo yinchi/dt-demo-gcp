@@ -40,6 +40,7 @@ setup_python_mkdocs() {
 
     echo "Creating mkdocs project structure..."
     uv run mkdocs new .
+    rm -f main.py  # Remove the default main.py file
 
     mkdir -p css
     touch css/extra.css
