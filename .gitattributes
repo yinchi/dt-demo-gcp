@@ -1,0 +1,2 @@
+# Treat Jupyter Notebook files as binary.  This avoids issues with large base64'd blobs.
+.ipynb binary
