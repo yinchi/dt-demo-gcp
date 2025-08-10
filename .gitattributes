@@ -1,2 +1,4 @@
 # Treat Jupyter Notebook files as binary.  This avoids issues with large base64'd blobs.
+# Also, mark them as documentation so GitHub skips them when computing code language statistics.
 .ipynb binary
+*.ipynb linguist-documentation
