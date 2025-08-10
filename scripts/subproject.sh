@@ -42,8 +42,8 @@ setup_python_mkdocs() {
     uv run mkdocs new .
     rm -f main.py  # Remove the default main.py file
 
-    mkdir -p css
-    touch css/extra.css
+    mkdir -p docs/css
+    touch docs/css/extra.css
 
     # Copy mkdocs.yml templates
     echo "Copying mkdocs.yml templates..."
