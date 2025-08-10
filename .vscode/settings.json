@@ -2,5 +2,9 @@
     "[markdown]": {
         "editor.wordWrap": "bounded",
         "editor.wordWrapColumn": 100
+    },
+    "[quarto]": {
+        "editor.wordWrap": "bounded",
+        "editor.wordWrapColumn": 100
     }
 }

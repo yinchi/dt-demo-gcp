@@ -32,8 +32,12 @@ __pycache__/
 # Jupyter Notebook
 .ipynb_checkpoints
 
+# Quarto
+.quarto/
+_quarto/
+
 # mkdocs documentation
-/site
+site/
 
 # Sphinx documentation
 docs/_build/

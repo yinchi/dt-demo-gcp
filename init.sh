@@ -47,6 +47,58 @@ else
     echo "✅ curl already installed."
 fi
 
+# Check for `python3-ipykernel`, used to run Python notebooks (if no venv)
+if ! python3 -c "import ipykernel" &> /dev/null; then
+    echo "🛠️ python3-ipykernel is not installed. Installing python3-ipykernel..."
+    if ! sudo apt-get -yqq install python3-ipykernel; then
+        echo "❌ Failed to install python3-ipykernel. Please install it manually."
+        exit 1
+    else
+        echo "✅ python3-ipykernel installed successfully."
+    fi
+else
+    echo "✅ python3-ipykernel already installed."
+fi
+
+# Check for `python3-nbformat`
+if ! python3 -c "import nbformat" &> /dev/null; then
+    echo "🛠️ python3-nbformat is not installed. Installing python3-nbformat..."
+    if ! sudo apt-get -yqq install python3-nbformat; then
+        echo "❌ Failed to install python3-nbformat. Please install it manually."
+        exit 1
+    else
+        echo "✅ python3-nbformat installed successfully."
+    fi
+else
+    echo "✅ python3-nbformat already installed."
+fi
+
+# Check for `python3-nbclient`
+if ! python3 -c "import nbclient" &> /dev/null; then
+    echo "🛠️ python3-nbclient is not installed. Installing python3-nbclient..."
+    if ! sudo apt-get -yqq install python3-nbclient; then
+        echo "❌ Failed to install python3-nbclient. Please install it manually."
+        exit 1
+    else
+        echo "✅ python3-nbclient installed successfully."
+    fi
+else
+    echo "✅ python3-nbclient already installed."
+fi
+
+# Check for `python3-git`, used to stamp Python notebooks with git information (if no venv)
+if ! python3 -c "import git" &> /dev/null; then
+    echo "🛠️ python3-git is not installed. Installing python3-git..."
+    if ! sudo apt-get -yqq install python3-git; then
+        echo "❌ Failed to install python3-git. Please install it manually."
+        exit 1
+    else
+        echo "✅ python3-git installed successfully."
+    fi
+else
+    echo "✅ python3-git already installed."
+fi
+
 echo ""
 echo "------------------------------------------------"
 echo "1. Install gum, used by this script..."

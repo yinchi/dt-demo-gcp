@@ -6,6 +6,8 @@
         "yahyabatulu.vscode-markdown-alert",
         "tamasfe.even-better-toml",
         "tomasdahlqvist.markdown-admonitions",
-        "mhutchie.git-graph"
+        "mhutchie.git-graph",
+        "quarto.quarto",
+        "ms-toolsai.jupyter"
     ]
 }
