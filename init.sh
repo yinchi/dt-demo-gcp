@@ -145,6 +145,7 @@ echo "------------------------------------------------"
 # uv, Python package manager
 # via developer's install script
 if ! command -v uv &> /dev/null; then
+    echo "❗️ uv is not installed.  Installing uv..."
     if ! gum spin --title "Installing uv..." -- curl -LsSf https://astral.sh/uv/install.sh | sh; then
         echo "❌ Failed to install uv. Please install it manually."
         exit 1
@@ -158,6 +159,7 @@ fi
 # npm, Node.js package manager
 # via apt
 if ! command -v npm &> /dev/null; then
+    echo "❗️ npm is not installed.  Installing npm..."
     if ! gum spin --title "Installing npm..." -- sudo apt-get -yqq install npm; then
         echo "❌ Failed to install npm. Please install it manually."
         exit 1
@@ -171,6 +173,7 @@ fi
 # pre-commit, a git hook manager
 # via apt
 if ! command -v pre-commit &> /dev/null; then
+    echo "❗️ pre-commit is not installed.  Installing pre-commit..."
     if ! gum spin --title "Installing pre-commit..." -- sudo apt-get -yqq install pre-commit; then
         echo "❌ Failed to install pre-commit. Please install it manually."
         exit 1
@@ -194,8 +197,8 @@ fi
 
 # Check for `python3-ipykernel`, used to run Python notebooks (if no venv)
 if ! python3 -c "import ipykernel" &> /dev/null; then
-    echo "🛠️ python3-ipykernel is not installed. Installing python3-ipykernel..."
-    if ! sudo apt-get -yqq install python3-ipykernel; then
+    echo "❗️ python3-ipykernel is not installed.  Installing python3-ipykernel..."
+    if ! gum spin --title "Installing python3-ipykernel..." -- sudo apt-get -yqq install python3-ipykernel; then
         echo "❌ Failed to install python3-ipykernel. Please install it manually."
         exit 1
     else
@@ -207,8 +210,8 @@ fi
 
 # Check for `python3-nbformat`
 if ! python3 -c "import nbformat" &> /dev/null; then
-    echo "🛠️ python3-nbformat is not installed. Installing python3-nbformat..."
-    if ! sudo apt-get -yqq install python3-nbformat; then
+    echo "❗️ python3-nbformat is not installed.  Installing python3-nbformat..."
+    if ! gum spin --title "Installing python3-nbformat..." -- sudo apt-get -yqq install python3-nbformat; then
         echo "❌ Failed to install python3-nbformat. Please install it manually."
         exit 1
     else
@@ -220,8 +223,8 @@ fi
 
 # Check for `python3-nbclient`
 if ! python3 -c "import nbclient" &> /dev/null; then
-    echo "🛠️ python3-nbclient is not installed. Installing python3-nbclient..."
-    if ! sudo apt-get -yqq install python3-nbclient; then
+    echo "❗️ python3-nbclient is not installed.  Installing python3-nbclient..."
+    if ! gum spin --title "Installing python3-nbclient..." -- sudo apt-get -yqq install python3-nbclient; then
         echo "❌ Failed to install python3-nbclient. Please install it manually."
         exit 1
     else
@@ -233,8 +236,8 @@ fi
 
 # Check for `python3-nbconvert`, used to convert notebooks to other formats
 if ! python3 -c "import nbconvert" &> /dev/null; then
-    echo "🛠️ python3-nbconvert is not installed. Installing python3-nbconvert..."
-    if ! sudo apt-get -yqq install python3-nbconvert; then
+    echo "❗️ python3-nbconvert is not installed.  Installing python3-nbconvert..."
+    if ! gum spin --title "Installing python3-nbconvert..." -- sudo apt-get -yqq install python3-nbconvert; then
         echo "❌ Failed to install python3-nbconvert. Please install it manually."
         exit 1
     else
@@ -246,8 +249,8 @@ fi
 
 # Check for `python3-git`, used to stamp Python notebooks with git information (if no venv)
 if ! python3 -c "import git" &> /dev/null; then
-    echo "🛠️ python3-git is not installed. Installing python3-git..."
-    if ! sudo apt-get -yqq install python3-git; then
+    echo "❗️ python3-git is not installed.  Installing python3-git..."
+    if ! gum spin --title "Installing python3-git..." -- sudo apt-get -yqq install python3-git; then
         echo "❌ Failed to install python3-git. Please install it manually."
         exit 1
     else
