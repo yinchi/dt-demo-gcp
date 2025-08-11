@@ -9,26 +9,69 @@
 name: dt-demo-gcp
 
 services:
+
+  # Miniature file server for static files
+  # Server doesn't handle base paths, so we mount the files at /public/dev-docs
+  # and keep the path prefix (no stripping)
   dev-docs:
     image: europe-west2-docker.pkg.dev/cambridge-ifm/dt-demo-gcp/dev-docs:latest
     container_name: dev-docs
-    networks:
-      - net
+    profiles:
+    - default # Launch service if no profile is specified
+    - docs    # Part of documentation service group
+    labels:
+    - "traefik.enable=true"
+    - "traefik.http.routers.dev-docs.rule=PathPrefix(`/dev-docs`)"
+
+  # Traefik reverse proxy
+  traefik:
+    image: traefik:v3
+    container_name: traefik
+    userns_mode: "host"
+    profiles:
+      - default # Launch service if no profile is specified
+      - infra   # Part of infrastructure group
     ports:
-      - "8080:80"
-    environment: []
-      # Add any environment variables your service needs here
-      # See: https://static-web-server.net/configuration/environment-variables/
-      # Example:
-      # - ENV_VAR_NAME: value
+      - "80:80" # HTTP
+      - "443:443" # HTTPS
+      - "10000:8080" # Traefik dashboard
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./traefik/traefik.yml:/traefik.yml:ro
+
+  # Authentication service
+  # FastAPI server (auth); PostgreSQL database (db-auth)
+  # /token for login, /validate for token validation
+  # /validate is used for ForwardAuth (Traefik)
+  db-auth:
+    container_name: db-auth
+    profiles:
+      - default # Launch service if no profile is specified
+      - auth    # Part of authentication service group
+      - db      # Is a database
+    image: postgres:17-bookworm
+    env_file:
+      - db/auth/.env
+    ports:
+      - "30001:5432"
+    volumes:
+      - ./db/auth/secret/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - db-auth-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h localhost -U postgres -d auth &> /dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
 
 networks:
-  net:
+  default:
     name: dt-demo-net
     driver: bridge
     attachable: true
 
-volumes: {}
+volumes:
+  db-auth-data:
   # Example for NFS mount -- ensure nfs-common is installed on the Docker host
   # For GCS, see: https://cloud.google.com/filestore/docs/create-instance-gcloud#create-filestore-instance
   # dt-volume:
