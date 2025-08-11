@@ -7,6 +7,7 @@
         "tamasfe.even-better-toml",
         "tomasdahlqvist.markdown-admonitions",
         "mhutchie.git-graph",
-        "ms-toolsai.jupyter"
+        "ms-toolsai.jupyter",
+        "hashicorp.hcl"
     ]
 }

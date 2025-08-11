@@ -1,0 +1,39 @@
+# Docker Compose file for dt-demo-gcp
+# Local development environment
+
+# In the initial stage, we will want to run a full local stack.
+# In later stages, we may only want to run a specific service locally for development while
+# connecting to other services in the cloud -- use `docker compose up <service_name>` to
+# launch a specific service.
+
+name: dt-demo-gcp
+
+services:
+  dev-docs:
+    image: europe-west2-docker.pkg.dev/cambridge-ifm/dt-demo-gcp/dev-docs:latest
+    container_name: dev-docs
+    networks:
+      - net
+    ports:
+      - "8080:80"
+    environment: []
+      # Add any environment variables your service needs here
+      # See: https://static-web-server.net/configuration/environment-variables/
+      # Example:
+      # - ENV_VAR_NAME: value
+
+networks:
+  net:
+    name: dt-demo-net
+    driver: bridge
+    attachable: true
+
+volumes: {}
+  # Example for NFS mount -- ensure nfs-common is installed on the Docker host
+  # For GCS, see: https://cloud.google.com/filestore/docs/create-instance-gcloud#create-filestore-instance
+  # dt-volume:
+    # driver: local
+    # driver_opts:
+    #   type: nfs
+    #   o: "addr=10.40.0.199,rw,nfsvers=4,async"
+    #   device: ":/docker/example"
