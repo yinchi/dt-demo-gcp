@@ -40,4 +40,4 @@ the command palette (`F1`):
 
 ## Full developer documentation
 
-Coming soon...
+See the `dev-docs/` directory.  The `uv run mkdocs serve` option is an easy way to serve the documentation files locally, with **live refresh**.

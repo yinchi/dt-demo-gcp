@@ -8,6 +8,8 @@ Assuming you have installed the required software using the `init.sh` script:
 
 ### Local, non-containerised
 
+This is recommended for development purposes, as it supports **live refresh**.
+
 ```bash
 uv run mkdocs serve -a <HOST>:<PORT>  # default: localhost:8000
 ```
