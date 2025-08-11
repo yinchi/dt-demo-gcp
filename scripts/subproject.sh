@@ -32,7 +32,7 @@ setup_python_mkdocs() {
         exit 1
     fi
     echo "Creating Python project: $project_name"
-    uv init --no-package --python 3.13 $project_name
+    uv init --no-package --python 3.13 --no-workspace $project_name
 
     echo "Setting up mkdocs and dependencies..."
     cd "$project_name"
@@ -42,13 +42,9 @@ setup_python_mkdocs() {
     uv run mkdocs new .
     rm -f main.py  # Remove the default main.py file
 
-    mkdir -p docs/css
-    touch docs/css/extra.css
-
     # Copy mkdocs.yml templates
     echo "Copying mkdocs.yml templates..."
-    cp `git rev-parse --show-toplevel`/templates/mkdocs/mkdocs.yml .
-    cp `git rev-parse --show-toplevel`/templates/mkdocs/index.md docs/
+    cp -r `git rev-parse --show-toplevel`/templates/mkdocs/* .
 
     echo
     echo "✅ Python mkdocs project '$project_name' created successfully."
