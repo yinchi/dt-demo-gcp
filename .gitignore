@@ -1,5 +1,6 @@
 # Environments
-.env
+*.env*
+*.env.old*
 .envrc
 .venv
 env/
@@ -7,7 +8,10 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-!.env.example
+!*.env.example
+
+*secret*
+!*secret.example*
 
 # Caches
 .cache

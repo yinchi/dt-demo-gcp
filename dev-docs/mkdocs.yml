@@ -1,4 +1,5 @@
 site_name: My Docs
+site_url: http://localhost/dev-docs/
 nav:
   - Home: index.md
 theme:

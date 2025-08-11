@@ -39,4 +39,4 @@ RUN uv run mkdocs build
 FROM joseluisq/static-web-server:2 AS runtime
 
 # Copy the built documentation from the builder stage
-COPY --from=builder /app/site /public
+COPY --from=builder /app/site /public/dev-docs

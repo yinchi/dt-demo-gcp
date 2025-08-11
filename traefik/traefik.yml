@@ -1,0 +1,6 @@
+api:
+  insecure: true
+  dashboard: true
+providers:
+  docker:
+    exposedbydefault: false
