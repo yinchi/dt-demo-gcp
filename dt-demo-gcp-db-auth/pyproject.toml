@@ -9,6 +9,7 @@ dependencies = [
     "dt-demo-gcp-auth",
     "psycopg>=3.2.9",
     "pydantic-settings>=2.10.1",
+    "sqlmodel>=0.0.24",
 ]
 
 [tool.uv.sources]
