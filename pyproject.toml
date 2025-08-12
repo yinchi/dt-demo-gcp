@@ -4,4 +4,7 @@ version = "0.1.0"
 requires-python = ">=3.13"
 
 [tool.uv.workspace]
-members = []
+members = [
+    "dt-demo-gcp-auth",
+    "dt-demo-gcp-db-auth",
+]

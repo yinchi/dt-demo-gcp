@@ -1,0 +1,26 @@
+[project]
+name = "dt-demo-gcp-auth"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Yin-Chi Chan", email = "ycc39@cam.ac.uk" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi[standard]>=0.116.1",
+]
+
+[project.scripts]
+auth = "dt_demo_gcp.auth:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv.build-backend]
+module-root = "src/dt_demo_gcp"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/dt_demo_gcp/"]
+namespace_packages = ["dt_demo_gcp"]
