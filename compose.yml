@@ -38,6 +38,13 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./traefik/traefik.yml:/traefik.yml:ro
+    healthcheck:
+      # Ping port 8080 (Traefik self endpoint, maps to 10000 externally)
+      test: ["CMD-SHELL", "traefik healthcheck &> /dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
 
   # Authentication service
   # FastAPI server (auth); PostgreSQL database (db-auth)
