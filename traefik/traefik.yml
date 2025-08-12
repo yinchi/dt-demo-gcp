@@ -4,3 +4,4 @@ api:
 providers:
   docker:
     exposedbydefault: false
+ping: true
