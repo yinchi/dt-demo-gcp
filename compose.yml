@@ -50,6 +50,17 @@ services:
   # FastAPI server (auth); PostgreSQL database (db-auth)
   # /token for login, /validate for token validation
   # /validate is used for ForwardAuth (Traefik)
+  auth:
+    image: europe-west2-docker.pkg.dev/cambridge-ifm/dt-demo-gcp/auth:latest
+    container_name: auth
+    profiles:
+      - default # Launch service if no profile is specified
+      - auth    # Part of authentication service group
+    ports:
+      - "10001:80"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.auth.rule=PathPrefix(`/auth`)"
   db-auth:
     container_name: db-auth
     profiles:

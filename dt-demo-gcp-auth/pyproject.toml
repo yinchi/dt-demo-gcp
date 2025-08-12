@@ -1,6 +1,5 @@
 [project]
 name = "dt-demo-gcp-auth"
-version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 authors = [
@@ -10,6 +9,7 @@ requires-python = ">=3.13"
 dependencies = [
     "fastapi[standard]>=0.116.1",
 ]
+dynamic = ["version"]
 
 [project.scripts]
 auth = "dt_demo_gcp.auth:main"
@@ -21,6 +21,15 @@ build-backend = "hatchling.build"
 [tool.uv.build-backend]
 module-root = "src/dt_demo_gcp"
 
+[tool.hatch.version]
+path = "src/dt_demo_gcp/auth/__version__.py"
+attribute = "__version__"
+
 [tool.hatch.build.targets.wheel]
 packages = ["src/dt_demo_gcp/"]
 namespace_packages = ["dt_demo_gcp"]
+
+[dependency-groups]
+dev = [
+    "hatch>=1.14.1",
+]
