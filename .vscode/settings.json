@@ -7,5 +7,6 @@
     "[quarto]": {
         "editor.wordWrap": "bounded",
         "editor.wordWrapColumn": 100
-    }
+    },
+    "python.terminal.activateEnvironment": false
 }
