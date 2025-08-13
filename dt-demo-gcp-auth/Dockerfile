@@ -42,5 +42,7 @@ COPY --from=builder --chown=app:app /app /app
 ENV PATH="/app/.venv/bin:$PATH"
 
 # Run the FastAPI application by default
-ENTRYPOINT [ "fastapi", "dev", "--host", "0.0.0.0", "--no-reload", \
+ENTRYPOINT [ "fastapi", "dev", "--host", "0.0.0.0", "--port", "8000", "--no-reload", \
     "/app/dt-demo-gcp-auth/src/dt_demo_gcp/auth/"]
+
+EXPOSE 8000

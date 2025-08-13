@@ -56,14 +56,14 @@ services:
     profiles:
       - default # Launch service if no profile is specified
       - auth    # Part of authentication service group
-    ports:
-      - "10001:8000"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.auth.rule=PathPrefix(`/auth`)"
+      - "traefik.http.routers.auth.middlewares=auth-stripprefix"
+      - "traefik.http.middlewares.auth-stripprefix.stripprefix.prefixes=/auth"
 
     # Set the root path for the FastAPI application (change as needed)
-    command: ["--root-path", ""]
+    command: ["--root-path", "/auth"]
   db-auth:
     container_name: db-auth
     profiles:
