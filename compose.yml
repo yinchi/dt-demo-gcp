@@ -57,10 +57,13 @@ services:
       - default # Launch service if no profile is specified
       - auth    # Part of authentication service group
     ports:
-      - "10001:80"
+      - "10001:8000"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.auth.rule=PathPrefix(`/auth`)"
+
+    # Set the root path for the FastAPI application (change as needed)
+    command: ["--root-path", ""]
   db-auth:
     container_name: db-auth
     profiles:
@@ -69,7 +72,7 @@ services:
       - db      # Is a database
     image: postgres:17-bookworm
     env_file:
-      - db/auth/.env
+      - dt-demo-gcp-db-auth/.env
     ports:
       - "30001:5432"
     volumes:
