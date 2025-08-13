@@ -1,6 +1,14 @@
-# Digital Twin platform (GCP version)
+# Hospital Digital Twin platform
 
-This repo contains a demonstrative digital twin platform for deployment on Google Cloud Platform.
+This repo contains a demonstrative digital twin platform for hospitals.
+
+The end goal of this project is deployment on [Google Cloud Platform](https://console.cloud.google.com/)&mdash;however, this project is currently still in the local development stage (local Docker Compose stack only).  The roadmap is as follows:
+
+1. [ ] Minimum implementation in Docker
+2. [ ] Migration to Kubernetes
+3. [ ] Migration to Google Cloud Platform
+
+Additional services to be added to the platform may follow the above pipeline at their own speed.
 
 ## Getting started
 
@@ -22,6 +30,8 @@ We assume an apt-based Linux environment.  For Windows machines, use [WSL](https
 - `uv`: for Python virtual environment setup and installing Python-based tools using `uv tool install`.
 - `npm`: for Typescript development and running Node.js based tools with `npx`.
 - Various linters, formatters, etc. using the above tools.
+
+Additional software can be installed using `git script install` (source `scripts.sh` first).
 
 ### VS Code extensions
 
