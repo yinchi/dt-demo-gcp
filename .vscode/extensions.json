@@ -8,6 +8,7 @@
         "tomasdahlqvist.markdown-admonitions",
         "mhutchie.git-graph",
         "ms-toolsai.jupyter",
-        "hashicorp.hcl"
+        "hashicorp.hcl",
+        "tommorris.mako"
     ]
 }

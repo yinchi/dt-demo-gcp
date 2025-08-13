@@ -13,7 +13,7 @@ refresh_scripts() {
 git config alias.chmod '!chmod +x $(git rev-parse --show-toplevel)/scripts/*.sh'
 
 # Run a script in the scripts/ directory
-# NOTE: Each script should be idempotent and not rely on the current working directory
+# NOTE: Each script not rely on the current working directory
 # Use `git rev-parse --show-toplevel` to get the root of the repository
 git config alias.script '!f() { \
     whichscript=$1;

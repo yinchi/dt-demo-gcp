@@ -275,3 +275,17 @@ if ! command -v yq -V &> /dev/null; then
 else
     echo "✅ yq already installed."
 fi
+
+
+# Check for `most`, used for output paging
+if ! command -v most &> /dev/null; then
+    echo "❗️ most is not installed.  Installing most..."
+    if ! gum spin --title "Installing most..." -- sudo apt-get -yqq install most; then
+        echo "❌ Failed to install most. Please install it manually."
+        exit 1
+    else
+        echo "✅ most installed successfully."
+    fi
+else
+    echo "✅ most already installed."
+fi
