@@ -34,3 +34,9 @@ repos:
     types: [markdown]
     language_version: 20.18.0  # Specify Node.js version
     args: ['--config', './configs/.markdownlint.yaml']
+- repo: https://github.com/hadolint/hadolint
+  rev: v2.12.0
+  hooks:
+    - id: hadolint-docker  # Use Docker to load and run hadolint
+      types: [dockerfile]
+      args: ['--config', './configs/.hadolint.yaml']
