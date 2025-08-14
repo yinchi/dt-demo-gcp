@@ -14,7 +14,11 @@ def plaintext_example(value: str, status_code: int = 200) -> dict[int, dict]:
     return {status_code: {"content": {"text/plain": {"example": value}}}}
 
 
-app = FastAPI()
+app = FastAPI(
+    title="DT Demo Authentication Service",
+    summary="Authentication service for the DT demo project.",
+    version=version,
+)
 
 
 class Message(pyd.BaseModel):
