@@ -72,7 +72,9 @@ services:
     ports:
       - "30001:5432"
     volumes:
-      - ./db/auth/secret/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      # Uncomment line below if needed to initialize database
+      # (unnecessary unless db-auth-data volume is deleted)
+      # - ./dt-demo-gcp-db-auth/secret/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
       - db-auth-data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -h localhost -U postgres -d auth &> /dev/null"]

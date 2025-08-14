@@ -65,7 +65,8 @@ if ! cat init.sql.template | envsubst > secret/init.sql.tmp; then
     echo "❌ Failed to generate secret/init.sql.tmp"
     exit 1
 fi
-sudo cp secret/init.sql.tmp secret/init.sql
+chmod 600 secret/init.sql.tmp  # Secure the file as it contains plaintext passwords
+sudo cp secret/init.sql.tmp secret/init.sql  # Copy to set UID/GID for the Docker container
 
 # Check for `"userns-remap": "default"` in /etc/docker/daemon.json
 if [ ! -f /etc/docker/daemon.json ]; then
