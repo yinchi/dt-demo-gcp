@@ -1,10 +1,15 @@
 """Authentication module for the DT demo."""
 
 import sys
+from typing import Annotated
 
 import pydantic as pyd
-from fastapi import FastAPI, cli
+from fastapi import Depends, FastAPI, HTTPException, cli, status
+from fastapi.middleware.wsgi import WSGIMiddleware
 from fastapi.responses import PlainTextResponse
+from fastapi.security.oauth2 import OAuth2PasswordRequestForm
+
+from dt_demo_gcp.auth.dash_login import app as login_app
 
 from .__version__ import __version__ as version
 
@@ -19,6 +24,8 @@ app = FastAPI(
     summary="Authentication service for the DT demo project.",
     version=version,
 )
+
+app.mount("/login", WSGIMiddleware(login_app.server))  # Mount the Dash app at /login
 
 
 class Message(pyd.BaseModel):
@@ -45,6 +52,12 @@ async def root() -> Message:
 async def health() -> str:
     """Health check endpoint."""
     return "OK"
+
+
+@app.post("/token", summary="Token")
+async def token(form: Annotated[OAuth2PasswordRequestForm, Depends()]) -> dict[str, str]:
+    """Token endpoint."""
+    raise HTTPException(status_code=status.HTTP_501_NOT_IMPLEMENTED, detail="Not yet implemented")
 
 
 def main():

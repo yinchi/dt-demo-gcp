@@ -7,6 +7,9 @@ authors = [
 ]
 requires-python = ">=3.13"
 dependencies = [
+    "dash-compose>=2023.3.12",
+    "dash-iconify>=0.1.2",
+    "dash-mantine-components>=2.1.0",
     "fastapi[standard]>=0.116.1",
     "sqlmodel>=0.0.24",
 ]
