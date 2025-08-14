@@ -15,7 +15,7 @@ UserIDField: FieldInfo = Field(default_factory=uuid4, sa_column=Column(PG_UUID, 
 
 # User name field
 UserNameField: FieldInfo = Field(
-    min_length=1, max_length=40, sa_column=Column(VARCHAR, unique=True, nullable=False)
+    min_length=1, max_length=40, sa_column=Column(VARCHAR, unique=True, nullable=False, index=True)
 )
 UserNameOptionalField: FieldInfo = copy.deepcopy(UserNameField)
 UserNameOptionalField.default = None
