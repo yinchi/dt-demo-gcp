@@ -15,7 +15,6 @@ services:
   # and keep the path prefix (no stripping)
   dev-docs:
     image: europe-west2-docker.pkg.dev/cambridge-ifm/dt-demo-gcp/dev-docs:latest
-    container_name: dev-docs
     profiles:
     - default # Launch service if no profile is specified
     - docs    # Part of documentation service group
@@ -26,7 +25,6 @@ services:
   # Traefik reverse proxy
   traefik:
     image: traefik:v3
-    container_name: traefik
     userns_mode: "host"
     profiles:
       - default # Launch service if no profile is specified
@@ -52,7 +50,6 @@ services:
   # /validate is used for ForwardAuth (Traefik)
   auth:
     image: europe-west2-docker.pkg.dev/cambridge-ifm/dt-demo-gcp/auth:latest
-    container_name: auth
     profiles:
       - default # Launch service if no profile is specified
       - auth    # Part of authentication service group
@@ -64,8 +61,7 @@ services:
 
     # Set the root path for the FastAPI application (change as needed)
     command: ["--root-path", "/auth"]
-  db-auth:
-    container_name: db-auth
+  auth-postgres:  # Database for auth service
     profiles:
       - default # Launch service if no profile is specified
       - auth    # Part of authentication service group
@@ -80,6 +76,20 @@ services:
       - db-auth-data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -h localhost -U postgres -d auth &> /dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+  auth-redis:  # Redis for auth service
+    profiles:
+      - default # Launch service if no profile is specified
+      - auth    # Part of authentication service group
+      - redis
+    image: redis:8-bookworm
+    ports:
+      - "30002:6379"
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping &> /dev/null"]
       interval: 10s
       timeout: 5s
       retries: 3
