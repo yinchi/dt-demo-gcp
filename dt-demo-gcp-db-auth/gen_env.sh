@@ -55,7 +55,7 @@ EOF
 chmod 600 .env
 
 # Print the path of the .env file
-echo "✅ Environment variables generated in .env file: $(git rev-parse --show-toplevel)/db/auth/.env"
+echo "✅ Environment variables generated in .env file: $(dirname "${BASH_SOURCE[0]}")/.env"
 
 # Create the initialization SQL script.  NOTE: ensure secret/ is in `.gitignore`.
 # This file will be mounted into /docker-entrypoint-initdb.d/
@@ -66,36 +66,13 @@ if ! cat init.sql.template | envsubst > secret/init.sql.tmp; then
     exit 1
 fi
 chmod 600 secret/init.sql.tmp  # Secure the file as it contains plaintext passwords
-sudo cp secret/init.sql.tmp secret/init.sql  # Copy to set UID/GID for the Docker container
-
-# Check for `"userns-remap": "default"` in /etc/docker/daemon.json
-if [ ! -f /etc/docker/daemon.json ]; then
-    echo "❌ /etc/docker/daemon.json not found. Please ensure Docker is installed and configured."
+if ! sudo cp secret/init.sql.tmp secret/init.sql; then
+    echo "❌ Failed to copy secret/init.sql.tmp to secret/init.sql"
     exit 1
 fi
-if ! grep -q '"userns-remap": "default"' /etc/docker/daemon.json; then
-    uid_base=0
-    gid_base=0
-else
-  # Figure out the correct UID/GID using subuid and subgid
-  if ! grep -q "^$(whoami):" /etc/subuid; then
-      echo "❌ User $(whoami) is not in /etc/subuid. Add an entry like '$(whoami):100000:65536' to /etc/subuid."
-      exit 1
-  else
-      uid_base=$(grep "^$(whoami):" /etc/subuid | cut -d: -f2)
-  fi
-
-  if ! grep -q "^$(whoami):" /etc/subgid; then
-      echo "❌ User $(whoami) is not in /etc/subgid. Add an entry like '$(whoami):100000:65536' to /etc/subgid."
-      exit 1
-  else
-      gid_base=$(grep "^$(whoami):" /etc/subgid | cut -d: -f2)
-  fi
-fi
-echo "ℹ️ Calculated uid_base=$uid_base and gid_base=$gid_base.  Adding 999 for postgres..."
 
 # Set ownership and permissions for secret/init.sql
-sudo chown $(( uid_base + 999 )):$(( gid_base + 999 )) secret/init.sql  # Docker postgres uid:gid
+sudo chown 999:999 secret/init.sql  # Docker postgres uid:gid
 sudo chmod 600 secret/init.sql
 echo "✅ File permissions set for secret/init.sql"
 
