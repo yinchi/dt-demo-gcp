@@ -8,10 +8,19 @@ from sqlalchemy import Column
 from sqlalchemy.dialects.postgresql import BYTEA
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.dialects.postgresql import VARCHAR
+from sqlalchemy.sql import func
 from sqlmodel import Field, SQLModel
 
 # User ID field
-UserIDField: FieldInfo = Field(default_factory=uuid4, sa_column=Column(PG_UUID, primary_key=True))
+UserIDField: FieldInfo = Field(
+    default_factory=uuid4,
+    sa_column=Column(
+        PG_UUID,
+        primary_key=True,
+        server_default=func.uuid_generate_v4(),  # Use PostgreSQL's UUID generation
+        nullable=False,
+    ),
+)
 
 # User name field
 UserNameField: FieldInfo = Field(

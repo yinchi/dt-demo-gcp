@@ -9,6 +9,7 @@
         "mhutchie.git-graph",
         "ms-toolsai.jupyter",
         "hashicorp.hcl",
-        "tommorris.mako"
+        "tommorris.mako",
+        "streetsidesoftware.code-spell-checker"
     ]
 }

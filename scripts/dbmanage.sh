@@ -38,6 +38,8 @@ echo
 path=$(dirname "$db")
 package=$(basename "$path")  # Each alembic project corresponds to an `uv` package
 cd "$path"
+echo "Current directory: $(pwd)"
+echo "Package: $package"
 
 if ! uv run --package "$package" sync  # Ensure uv is in sync for the chosen package
 then
@@ -61,7 +63,7 @@ revision() {
         exit 1
     fi
     if ! uv run --package "$package" alembic \
-        revision --autogenerate -m "$message" 2>/dev/null; then
+        revision --autogenerate -m "$message"; then
         echo "❌ Failed to create migration script."
         exit 1
     else
