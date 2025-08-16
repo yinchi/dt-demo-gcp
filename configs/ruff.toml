@@ -52,7 +52,7 @@ select = [
     "PL",      # pylint
     "Q", "RET", "RSE"  # flake8
 ]
-ignore = []
+ignore = ["PLR0911"]
 
 # Allow fix for all enabled rules (when `--fix`) is provided.
 fixable = ["ALL"]
