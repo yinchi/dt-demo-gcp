@@ -56,6 +56,10 @@ services:
     profiles:
       - default # Launch service if no profile is specified
       - auth    # Part of authentication service group
+    environment:
+      - DB_HOST=auth-postgres  # Use Docker internal hostname
+      - DB_PORT=5432  # Use internal port number
+      - TOKEN_URL=http://auth:8000/token  # Use Docker internal hostname
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.auth.rule=PathPrefix(`/`)"
