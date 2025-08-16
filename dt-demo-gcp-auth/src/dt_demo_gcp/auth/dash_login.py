@@ -8,13 +8,14 @@ import dash
 import dash_mantine_components as dmc
 import flask
 import requests
-from dash import Dash, Input, Output, State, dcc, no_update
+from dash import Dash, Input, Output, State, dcc
 from dash_compose import composition
 from dash_iconify import DashIconify
 from fastapi import HTTPException, status
-from pydantic import HttpUrl
 
-API_URL = HttpUrl("http://localhost:8000/token")  # The API URL, from within the `auth` container
+from dt_demo_gcp.auth.config import settings
+
+TOKEN_URL = settings.token_url
 COPYRIGHT_YEAR = 2025
 NDASH = "\u2013"  # en dash
 NBSP = "\u00a0"  # non-breaking space
@@ -31,6 +32,25 @@ def copyright():  # pylint: disable=redefined-builtin
         "Anandarup Mukherjee & Yin-Chi Chan, Institute for Manufacturing, "
         "University of Cambridge"
     )
+
+
+def parse_error_fragment(error_fragment: str | None) -> tuple[str, str]:
+    """Parse the error fragment from the URL."""
+    if not error_fragment:
+        return "OK", "none"
+    if error_fragment == "missing_token":
+        return "User is not authenticated", "block"
+    if error_fragment == "expired_token":
+        return "User access token is expired", "block"
+    if error_fragment == "empty_fields":
+        return "Username and password cannot be empty", "block"
+    if error_fragment == "credentials":
+        return "Invalid username or password", "block"
+    if error_fragment == "jwt_error":
+        return "User access token is invalid", "block"
+    if error_fragment == "unexpected_error":
+        return "An unexpected error occurred", "block"
+    return f"Unknown error: {error_fragment}", "block"
 
 
 @composition
@@ -60,7 +80,7 @@ def layout():
                 with dmc.Stack(None, gap="md"):
                     yield dmc.Title("Login", order=2)
                     yield dmc.Text(
-                        "Invalid username or password",
+                        "Initial error message (hidden)",
                         id="error-message",
                         c="red",
                         size="lg",
@@ -98,8 +118,24 @@ app.layout = layout()
 
 
 @app.callback(
-    Output("error-message", "display"),
     Output("error-message", "children"),
+    Output("error-message", "display"),
+    Input("url", "search"),
+)
+def update_error_message(search: str) -> tuple[str, str]:
+    """Update the error message based on the URL search parameters.
+
+    The search parameter should contain "error=<error_type>".  The `error_type` value
+    determines the error message displayed to the user.
+    """
+    error_fragment = search.split("error=")[-1] if "error=" in search else None
+    print(f"Parsed error fragment: {error_fragment}")
+    ret = parse_error_fragment(error_fragment)
+    print(f"Returning error message: {ret}")
+    return ret
+
+
+@app.callback(
     Output("url", "href"),
     Output("url", "refresh"),
     Input("login-button", "n_clicks"),
@@ -112,32 +148,34 @@ app.layout = layout()
 )
 def login(_, _2, _3, current_url: str, username: str, password: str):
     """Check login credentials."""
-    # Check inputs
+    # Check inputs.
+    # On error, set URL to "/login" to clear search parameter of the URL (dcc.Location).
     if not username or not password:
-        return "block", "Invalid username or password", no_update, no_update
+        return "/login?error=empty_fields", True
 
     # Determine /token API endpoint using current host.  We pass in a `dict` to form
     # data, which the FastAPI backend reads using the
     # fastapi.security.oauth2.OAuth2PasswordRequestForm class.
     request_form = {"grant_type": "password", "username": username, "password": password}
-    print("HTTP POST to:", API_URL)
+    print("HTTP POST to:", TOKEN_URL)
 
-    # Call API endpoint
+    # Call API endpoint.
+    # On success, set URL (dcc.Location) to "/validate" to trigger a redirect.
+    # On error, set URL to "/login" to clear search parameter of the URL (dcc.Location).
+    # Note we only need "refresh=True" in the successful case.
     try:
-        api_response = requests.post(API_URL, data=request_form)
+        api_response = requests.post(TOKEN_URL, data=request_form)
         print("Request body:", api_response.request.body if api_response.request.body else "None")
         print("Response:", api_response.status_code)
-        d: dict = api_response.json()
-        token = d["access_token"]
     except requests.RequestException as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
-    print(json.dumps(d, indent=2))
 
     if api_response.status_code == status.HTTP_200_OK:
         # Parse the response
         try:
             d = api_response.json()
             token = d["access_token"]
+            print(json.dumps(d, indent=2))
         except json.JSONDecodeError:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Invalid JSON response"
@@ -158,22 +196,15 @@ def login(_, _2, _3, current_url: str, username: str, password: str):
             samesite="Lax",
         )
 
-        return "none", "", no_update, no_update
+        # Redirect to /validate to check token validity
+        # TODO: create home page and redirect there instead
+        return "/validate", True
+
     if api_response.status_code == status.HTTP_401_UNAUTHORIZED:
-        return "block", "Invalid username or password", no_update, no_update
+        return "/login/?error=credentials", True
     if api_response.status_code >= status.HTTP_500_INTERNAL_SERVER_ERROR:
-        return (
-            "block",
-            f"Server error occurred ({api_response.status_code}), {api_response.text}",
-            no_update,
-            no_update,
-        )
-    return (
-        "block",
-        f"Unexpected error occurred ({response.status_code}), {response.text}",
-        no_update,
-        no_update,
-    )
+        return "/login/?error=unexpected_error", True
+    return "/login/?error=unexpected_error", True
 
 
 if __name__ == "__main__":

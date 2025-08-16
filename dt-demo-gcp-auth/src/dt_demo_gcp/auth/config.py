@@ -14,6 +14,8 @@ class Settings(BaseSettings):
     db_port: int
     db_name: str
 
+    token_url: str
+
     # Allow scripts to use this model even if field is not set.
     # Perform check in `dt_demo_gcp.auth.authenticate_user()`
     jwt_secret_key: str | None = None

@@ -4,6 +4,7 @@ from time import time
 from typing import Literal
 
 import bcrypt
+import jose
 from fastapi import HTTPException, status
 from jose.constants import ALGORITHMS
 from jwt_pydantic import JWTPydantic
@@ -67,3 +68,19 @@ async def authenticate_user(session: AsyncSession, username: str, password: str)
         algorithm=ALGORITHMS.HS256,
     )
     return LoginResponse(access_token=token)
+
+
+async def decode_jwt_token(token: str) -> JWTUser:
+    """Decode the JWT token and return the user claims.
+
+    The error string, if any, will be included in the HTTP response as an `error` fragment
+    in the redirect URL.
+    """
+    try:
+        return JWTUser(token, key=settings.jwt_secret_key)
+    except jose.ExpiredSignatureError as e:
+        raise ValueError("expired_token") from e
+    except jose.JOSEError as e:  # Catch-all for JOSE errors
+        raise ValueError("jwt_error") from e
+    except Exception as e:
+        raise ValueError("unexpected_error") from e
