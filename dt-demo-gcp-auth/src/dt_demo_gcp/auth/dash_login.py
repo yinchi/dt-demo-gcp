@@ -4,12 +4,14 @@ import json
 from datetime import date
 from sys import argv
 
+import dash
 import dash_mantine_components as dmc
+import flask
 import requests
 from dash import Dash, Input, Output, State, dcc, no_update
 from dash_compose import composition
 from dash_iconify import DashIconify
-from fastapi import status
+from fastapi import HTTPException, status
 from pydantic import HttpUrl
 
 API_URL = HttpUrl("http://localhost:8000/token")  # The API URL, from within the `auth` container
@@ -119,20 +121,59 @@ def login(_, _2, _3, current_url: str, username: str, password: str):
     # fastapi.security.oauth2.OAuth2PasswordRequestForm class.
     request_form = {"grant_type": "password", "username": username, "password": password}
     print("HTTP POST to:", API_URL)
-    print(request_form)
-    response = requests.post(API_URL, data=request_form)
-    print("Request body:", response.request.body if response.request.body else "None")
-    print("Response:", response.status_code)
-    print(json.dumps(response.json(), indent=2))
 
-    if response.status_code == status.HTTP_200_OK:
-        # TODO: If successful, redirect to home page, for now do nothing
+    # Call API endpoint
+    try:
+        api_response = requests.post(API_URL, data=request_form)
+        print("Request body:", api_response.request.body if api_response.request.body else "None")
+        print("Response:", api_response.status_code)
+        d: dict = api_response.json()
+        token = d["access_token"]
+    except requests.RequestException as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+    print(json.dumps(d, indent=2))
+
+    if api_response.status_code == status.HTTP_200_OK:
+        # Parse the response
+        try:
+            d = api_response.json()
+            token = d["access_token"]
+        except json.JSONDecodeError:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Invalid JSON response"
+            )
+        except KeyError:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Missing 'access_token' in response",
+            )
+
+        # Set the access token in the cookies
+        response: flask.Response = dash.callback_context.response
+        response.set_cookie(
+            key="access_token",
+            value=token,
+            max_age=24 * 60 * 60,  # 1 day
+            httponly=True,
+            samesite="Lax",
+        )
+
         return "none", "", no_update, no_update
-    if response.status_code == status.HTTP_401_UNAUTHORIZED:
+    if api_response.status_code == status.HTTP_401_UNAUTHORIZED:
         return "block", "Invalid username or password", no_update, no_update
-    if response.status_code >= status.HTTP_500_INTERNAL_SERVER_ERROR:
-        return "block", f"Server error occurred ({response.status_code})", no_update, no_update
-    return "block", f"Unexpected error occurred ({response.status_code})", no_update, no_update
+    if api_response.status_code >= status.HTTP_500_INTERNAL_SERVER_ERROR:
+        return (
+            "block",
+            f"Server error occurred ({api_response.status_code}), {api_response.text}",
+            no_update,
+            no_update,
+        )
+    return (
+        "block",
+        f"Unexpected error occurred ({response.status_code}), {response.text}",
+        no_update,
+        no_update,
+    )
 
 
 if __name__ == "__main__":
