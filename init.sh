@@ -160,7 +160,9 @@ fi
 # via apt
 if ! command -v npm &> /dev/null; then
     echo "❗️ npm is not installed.  Installing npm..."
-    if ! gum spin --title "Installing npm..." -- sudo apt-get -yqq install npm; then
+    if ! gum spin --title "Installing npm..." -- \
+            { curl -fsSL https://deb.nodesource.com/setup_22.x | sudo bash -; \
+            sudo apt-get -yqq install nodejs }; then
         echo "❌ Failed to install npm. Please install it manually."
         exit 1
     else
@@ -168,6 +170,13 @@ if ! command -v npm &> /dev/null; then
     fi
 else
     echo "✅ npm already installed."
+fi
+# Install yarn
+if ! gum spin --title "Installing yarn..." -- sudo npm install -g yarn; then
+    echo "❌ Failed to install yarn. Please install it manually."
+    exit 1
+else
+    echo "✅ yarn installed successfully."
 fi
 
 # pre-commit, a git hook manager

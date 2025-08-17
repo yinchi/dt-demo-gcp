@@ -104,6 +104,24 @@ services:
       retries: 3
       start_period: 30s
 
+
+  # Login page (static site built with Vite)
+  login:
+    image: europe-west2-docker.pkg.dev/cambridge-ifm/dt-demo-gcp/login:latest
+    restart: always
+    profiles:
+      - default   # Launch service if no profile is specified
+      - frontend  # Serves a webpage or set of web pages
+      - auth      # Part of authentication service group
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.login.rule=PathPrefix(`/login`)"
+      - "traefik.http.routers.login.middlewares=login-strip-prefix"
+      - "traefik.http.middlewares.login-strip-prefix.stripprefix.prefixes=/login"
+    environment:
+      - VITE_API_URL=http://auth:8000/token
+      - VITE_REDIRECT_URL=http://localhost/validate
+
 networks:
   default:
     name: dt-demo-net

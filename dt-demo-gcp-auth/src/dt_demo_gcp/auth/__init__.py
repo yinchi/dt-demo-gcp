@@ -5,14 +5,13 @@ from typing import Annotated
 
 import pydantic as pyd
 from fastapi import Cookie, Depends, FastAPI, HTTPException, cli, status
-from fastapi.middleware.wsgi import WSGIMiddleware
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import PlainTextResponse
 from fastapi.security.oauth2 import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing_extensions import Literal
 
 from dt_demo_gcp.auth.auth import JWTUser, LoginResponse, authenticate_user, decode_jwt_token
-from dt_demo_gcp.auth.dash_login import app as login_app
 from dt_demo_gcp.auth.db import get_session
 
 from .__version__ import __version__ as version
@@ -36,8 +35,13 @@ app = FastAPI(
     summary="Authentication service for the DT demo project.",
     version=version,
 )
-
-app.mount("/login", WSGIMiddleware(login_app.server))  # Mount the Dash app at /login
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins for development; restrict in production
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 class Message(pyd.BaseModel):

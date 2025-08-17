@@ -1,7 +1,8 @@
 group "all" {
     targets = [
         "dev-docs",
-        "auth"
+        "auth",
+        "login"
     ]
 }
 
@@ -32,4 +33,10 @@ target "auth" {
   context = "."  # UV workspace root, not member root
   dockerfile = "dt-demo-gcp-auth/Dockerfile"
   tags = ["${BAKE_PREFIX}/auth:latest"]
+}
+
+target "login" {
+  context = "./dt-demo-gcp-login"
+  dockerfile = "Dockerfile"
+  tags = ["${BAKE_PREFIX}/login:latest"]
 }
