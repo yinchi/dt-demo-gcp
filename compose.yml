@@ -119,7 +119,7 @@ services:
       - "traefik.http.routers.login.middlewares=login-strip-prefix"
       - "traefik.http.middlewares.login-strip-prefix.stripprefix.prefixes=/login"
     environment:
-      - VITE_API_URL=http://auth:8000/token
+      - VITE_TOKEN_URL=http://localhost/token
       - VITE_REDIRECT_URL=http://localhost/validate
 
 networks:
