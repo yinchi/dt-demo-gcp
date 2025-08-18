@@ -20,101 +20,157 @@ import {
 
 import { Icon } from "@iconify/react";
 
+interface SuccessPayload {
+  access_token: string;
+  token_type: string;
+}
+
+interface ErrorPayload {
+  detail: string;
+}
+
+interface ApiResult {
+  statusCode: number;
+  payload: SuccessPayload | ErrorPayload;
+}
+
+const tokenUrl = import.meta.env.VITE_TOKEN_URL ?? "http://localhost/token";
+const redirectURL =
+  import.meta.env.VITE_REDIRECT_URL ?? "http://localhost/validate";
+
 function copyright() {
-  const year = new Date().getFullYear();
-  const left_year = 2025;
-  const right_year = year > left_year ? ` &ndash; ${year}` : "";
+  /** Render the copyright notice. */
+  const year: number = new Date().getFullYear();
+  const left_year: number = 2025;
+  const right_segment: string = year > left_year ? `&ndash;${year}` : "";
   return (
     <Text>
-      © {left_year}
-      {right_year} Anandarup Mukherjee & Yin-Chi Chan, Institute for
-      Manufacturing, University of Cambridge
+      {`© ${left_year.toString()}${right_segment}`}
+      Anandarup Mukherjee & Yin-Chi Chan, Institute for Manufacturing,
+      University of Cambridge
     </Text>
   );
 }
 
+const callTokenApi = async (values: {
+  username: string;
+  password: string;
+}): Promise<ApiResult> => {
+  /** Call the token API and return the result.
+   *
+   * Parameters:
+   * - values: The form values from the calling function.
+   *
+   * Returns: A promise that resolves to the API result
+   */
+
+  // extract username and password from $values
+  const { username, password } = values;
+
+  // Add a fixed grant_type
+  const urlEncodedBody = new URLSearchParams({
+    grant_type: "password",
+    username: username,
+    password: password,
+  }).toString();
+
+  try {
+    const response = await fetch(tokenUrl, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: urlEncodedBody,
+    });
+
+    // If we got a response, return its status code and payload
+    const data = (await response.json()) as SuccessPayload | ErrorPayload;
+
+    return {
+      statusCode: response.status,
+      payload: data,
+    };
+  } catch (error) {
+    // If we could not get a valid response, return a 500 Internal Server Error
+    console.error("API call failed:", error);
+    return {
+      statusCode: 500,
+      payload: { detail: "Internal Server Error" },
+    };
+  }
+};
+
+const login = async (
+  values: { username: string; password: string },
+  setErrMsg: (msg: string) => void,
+  setErrMsgDisplay: (display: string) => void,
+) => {
+  /** Handle the login process when the page form is submitted.
+   *
+   * Parameters:
+   * - values: The submitted form values.
+   *
+   * Returns: A promise that redirects the user upon successful login or shows an error message
+   * upon failure.
+   */
+  console.log("Logging in with:", values);
+  console.log("Token URL:", tokenUrl);
+
+  const result = await callTokenApi(values);
+  if (result.statusCode === 200) {
+    console.log("Login successful:", result.statusCode, result.payload);
+    const oneDayInMilliseconds = 24 * 60 * 60 * 1000;
+    const expiryDate = new Date(
+      Date.now() + oneDayInMilliseconds,
+    ).toUTCString();
+    document.cookie = `access_token=${(result.payload as SuccessPayload).access_token}; Path=/; SameSite=Lax; Expires=${expiryDate}`;
+    window.location.href = redirectURL;
+  } else {
+    console.error("Login failed:", result.statusCode, result.payload);
+    setErrMsg((result.payload as ErrorPayload).detail);
+    setErrMsgDisplay("block");
+  }
+};
+
+function MyAppHeader() {
+  /** Render the header section of the app. */
+  return (
+    <AppShell.Header miw={1200}>
+      <Group
+        justify="space-between"
+        flex={1}
+        h="100%"
+        px="md"
+        bg="dark"
+        c="white"
+      >
+        <Title order={1}>Hospital DT Demo</Title>
+      </Group>
+    </AppShell.Header>
+  );
+}
+
+function MyAppFooter() {
+  /** Render the footer section of the app. */
+  return (
+    <AppShell.Footer miw={1200} bg={"dark"} c="white">
+      <Group justify="space-between" flex={1} h="100%" px="sm" pt={10} pb={5}>
+        {copyright()}
+        <Anchor href="https://github.com/yinchi/dt-demo-gcp" target="_blank">
+          <Icon icon="octicon:mark-github-16" />
+          &nbsp;GitHub
+        </Anchor>
+      </Group>
+    </AppShell.Footer>
+  );
+}
+
 export default function App() {
-  interface SuccessPayload {
-    access_token: string;
-    token_type: string;
-  }
+  const [errMsg, setErrMsg] = useState("");
+  const [errMsgDisplay, setErrMsgDisplay] = useState("none");
 
-  interface ErrorPayload {
-    detail: string;
-  }
-
-  interface ApiResult {
-    statusCode: number;
-    payload: SuccessPayload | ErrorPayload;
-  }
-
-  const callApi = async (
-    url: string,
-    method: string,
-    body: Record<string, string>,
-  ): Promise<ApiResult> => {
-    // extract username and password from body
-    const { username, password } = body;
-
-    // Add a fixed grant_type
-    const urlEncodedBody = new URLSearchParams({
-      grant_type: "password",
-      username: username,
-      password: password,
-    }).toString();
-
-    try {
-      const response = await fetch(url, {
-        method,
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: urlEncodedBody,
-      });
-
-      // If we got a response, return its status code and payload
-      const data = (await response.json()) as SuccessPayload | ErrorPayload;
-
-      return {
-        statusCode: response.status,
-        payload: data,
-      };
-    } catch (error) {
-      // If we could not get a valid response, return a 500 Internal Server Error
-      console.error("API call failed:", error);
-      return {
-        statusCode: 500,
-        payload: { detail: "Internal Server Error" },
-      };
-    }
-  };
-
-  const login = async (values: { username: string; password: string }) => {
-    const tokenUrl = import.meta.env.VITE_TOKEN_URL ?? "http://localhost/token";
-    const redirectURL =
-      import.meta.env.VITE_REDIRECT_URL ?? "http://localhost/validate";
-    console.log("Logging in with:", values);
-    console.log("Token URL:", tokenUrl);
-
-    const result = await callApi(tokenUrl, "POST", values);
-    if (result.statusCode === 200) {
-      console.log("Login successful:", result.statusCode, result.payload);
-      // TODO: Handle successful login (e.g., store cookie, redirect)
-      const oneDayInMilliseconds = 24 * 60 * 60 * 1000;
-      const expiryDate = new Date(
-        Date.now() + oneDayInMilliseconds,
-      ).toUTCString();
-      document.cookie = `access_token=${(result.payload as SuccessPayload).access_token}; Path=/; SameSite=Lax; Expires=${expiryDate}`;
-      window.location.href = redirectURL;
-    } else {
-      console.error("Login failed:", result.statusCode, result.payload);
-      // TODO: Handle login failure (e.g., show error message)
-      setErrMsg((result.payload as ErrorPayload).detail);
-      setErrMsgDisplay("block");
-    }
-  };
-
+  // Define the form for user login
   const form = useForm({
     mode: "uncontrolled",
     initialValues: {
@@ -127,12 +183,10 @@ export default function App() {
     },
   });
 
-  const [errMsg, setErrMsg] = useState("");
-  const [errMsgDisplay, setErrMsgDisplay] = useState("none");
-
+  // Define callbacks that run on page load
   useEffect(() => {
-    // Fetch the error field from the URL query fragment and use it
-    // to set the error message state
+    /** Fetch the error field from the URL query fragment and use it to set the
+     * error message state. */
     const urlParams = new URLSearchParams(window.location.search.substring(1));
     const error = urlParams.get("error");
     console.log("Error from URL:", error);
@@ -149,7 +203,7 @@ export default function App() {
       setErrMsgDisplay("block");
     }
 
-    // Check for a valid access token and redirect if valid
+    /** Check for a valid access token and redirect if valid. */
     const validateToken = async () => {
       const redirectURL =
         import.meta.env.VITE_REDIRECT_URL ?? "http://localhost/validate";
@@ -183,10 +237,10 @@ export default function App() {
         console.log("No existing access token found, staying on login page.");
       }
     };
-
     validateToken();
   }, []);
 
+  // Return the page layout
   return (
     <MantineProvider>
       <AppShell
@@ -195,20 +249,13 @@ export default function App() {
         padding="md"
         miw={1200}
       >
-        <AppShell.Header miw={1200}>
-          <Group
-            justify="space-between"
-            flex={1}
-            h="100%"
-            px="md"
-            bg="dark"
-            c="white"
-          >
-            <Title order={1}>Hospital DT Demo</Title>
-          </Group>
-        </AppShell.Header>
+        <MyAppHeader />
         <AppShell.Main w={1200 - 35}>
-          <form onSubmit={form.onSubmit((values) => login(values))}>
+          <form
+            onSubmit={form.onSubmit((values) =>
+              login(values, setErrMsg, setErrMsgDisplay),
+            )}
+          >
             <Stack gap="md">
               <Title order={2}>Login</Title>
               <Text c="red" size="lg" style={{ display: errMsgDisplay }}>
@@ -236,25 +283,7 @@ export default function App() {
             </Stack>
           </form>
         </AppShell.Main>
-        <AppShell.Footer miw={1200} bg={"dark"} c="white">
-          <Group
-            justify="space-between"
-            flex={1}
-            h="100%"
-            px="sm"
-            pt={10}
-            pb={5}
-          >
-            {copyright()}
-            <Anchor
-              href="https://github.com/yinchi/dt-demo-gcp"
-              target="_blank"
-            >
-              <Icon icon="octicon:mark-github-16" />
-              &nbsp;GitHub
-            </Anchor>
-          </Group>
-        </AppShell.Footer>
+        <MyAppFooter />
       </AppShell>
     </MantineProvider>
   );
