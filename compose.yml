@@ -71,7 +71,7 @@ services:
       - default # Launch service if no profile is specified
       - auth    # Part of authentication service group
       - db      # Is a database
-    image: postgres:17-bookworm
+    image: postgres:17-alpine
     restart: always
     env_file:
       - dt-demo-gcp-db-auth/.env
@@ -93,7 +93,7 @@ services:
       - default # Launch service if no profile is specified
       - auth    # Part of authentication service group
       - redis
-    image: redis:8-bookworm
+    image: redis:8-alpine
     restart: always
     ports:
       - "30002:6379"

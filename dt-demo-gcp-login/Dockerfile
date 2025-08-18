@@ -12,11 +12,5 @@ RUN yarn build
 
 ###################################################
 
-FROM nginx:stable-alpine AS runtime
-
-# Copy built files to Nginx's default directory
-COPY --from=builder /app/dist /usr/share/nginx/html
-
-# Expose port 80 and set the default command
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+FROM joseluisq/static-web-server:2 AS runtime
+COPY --from=builder /app/dist /public/
