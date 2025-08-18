@@ -49,6 +49,15 @@ bake() {
     return $exitcode
 }
 
+# Clean up Docker resources
+docker_clean() {
+    docker image prune -f --filter "dangling=true"
+    docker volume prune --filter "label=com.docker.volume.anonymous"
+    docker network prune -f
+    docker container prune -f
+    docker builder prune -f
+}
+
 
 ### FINISH ###
 echo "
@@ -57,5 +66,6 @@ with 'git config -l | grep alias.'
 
 Shell functions added:
  - bake()
+ - docker_clean()
  - refresh_scripts()
 "
