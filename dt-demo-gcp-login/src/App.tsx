@@ -101,7 +101,11 @@ export default function App() {
     if (result.statusCode === 200) {
       console.log("Login successful:", result.statusCode, result.payload);
       // TODO: Handle successful login (e.g., store cookie, redirect)
-      document.cookie = `access_token=${(result.payload as SuccessPayload).access_token}; path=/; samesite=lax`;
+      const oneDayInMilliseconds = 24 * 60 * 60 * 1000;
+      const expiryDate = new Date(
+        Date.now() + oneDayInMilliseconds,
+      ).toUTCString();
+      document.cookie = `access_token=${(result.payload as SuccessPayload).access_token}; Path=/; SameSite=Lax; Expires=${expiryDate}`;
       window.location.href = redirectURL;
     } else {
       console.error("Login failed:", result.statusCode, result.payload);
@@ -144,6 +148,43 @@ export default function App() {
       setErrMsg(theErrorMsg);
       setErrMsgDisplay("block");
     }
+
+    // Check for a valid access token and redirect if valid
+    const validateToken = async () => {
+      const redirectURL =
+        import.meta.env.VITE_REDIRECT_URL ?? "http://localhost/validate";
+      const token = document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("access_token="))
+        ?.split("=")[1];
+
+      if (token) {
+        try {
+          const response = await fetch(redirectURL, {
+            method: "GET",
+            headers: {
+              Accept: "application/json",
+              Cookie: `access_token=${token}`,
+            },
+          });
+
+          if (response.status === 200) {
+            console.log(
+              "User already has a valid access token, redirecting...",
+            );
+            window.location.href = redirectURL;
+          } else {
+            console.error("Invalid access token, staying on login page.");
+          }
+        } catch (error) {
+          console.error("Token validation failed:", error);
+        }
+      } else {
+        console.log("No existing access token found, staying on login page.");
+      }
+    };
+
+    validateToken();
   }, []);
 
   return (
