@@ -34,9 +34,8 @@ interface ApiResult {
   payload: SuccessPayload | ErrorPayload;
 }
 
-const tokenUrl = import.meta.env.VITE_TOKEN_URL ?? "http://localhost/token";
-const redirectURL =
-  import.meta.env.VITE_REDIRECT_URL ?? "http://localhost/validate";
+const tokenUrl = "https://yc.ngrok.dev/token";
+const redirectURL = "https://yc.ngrok.dev/validate";
 
 function copyright() {
   /** Render the copyright notice. */
@@ -205,8 +204,6 @@ export default function App() {
 
     /** Check for a valid access token and redirect if valid. */
     const validateToken = async () => {
-      const redirectURL =
-        import.meta.env.VITE_REDIRECT_URL ?? "http://localhost/validate";
       const token = document.cookie
         .split("; ")
         .find((row) => row.startsWith("access_token="))
