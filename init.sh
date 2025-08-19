@@ -156,20 +156,22 @@ else
     echo "✅ uv already installed."
 fi
 
-# npm, Node.js package manager
+# nodejs package manager
 # via apt
 if ! command -v npm &> /dev/null; then
-    echo "❗️ npm is not installed.  Installing npm..."
-    if ! gum spin --title "Installing npm..." -- \
-            { curl -fsSL https://deb.nodesource.com/setup_22.x | sudo bash -; \
-            sudo apt-get -yqq install nodejs }; then
-        echo "❌ Failed to install npm. Please install it manually."
+    echo "❗️ nodejs is not installed.  Installing nodejs..."
+    if ! gum spin --title "Installing nodejs..." -- \
+            curl -fsSL https://deb.nodesource.com/setup_22.x | sudo bash -; then
+        echo "❌ Failed to install nodejs. Please install it manually."
         exit 1
-    else
-        echo "✅ npm installed successfully."
+    fi
+    if ! gum spin --title "Installing nodejs..." -- \
+            sudo apt-get -yqq install node-npm-bundled nodejs; then
+        echo "❌ Failed to install nodejs. Please install it manually."
+        exit 1
     fi
 else
-    echo "✅ npm already installed."
+    echo "✅ nodejs already installed."
 fi
 # Install yarn
 if ! gum spin --title "Installing yarn..." -- sudo npm install -g yarn; then
