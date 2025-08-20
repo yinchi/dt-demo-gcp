@@ -25,7 +25,7 @@ We assume an apt-based Linux environment.  For Windows machines, use [WSL](https
 
 - Visual Studio Code
 - `pre-commit`: For setting up pre-commit hooks.
-  - This will ensure proper code formatting and style and minimize superfluous formatting-only file changes.
+    - This will ensure proper code formatting and style and minimize superfluous formatting-only file changes.
 - Go: for Go language development, or simply installing Go-based tools using `go install`.
 - `uv`: for Python virtual environment setup and installing Python-based tools using `uv tool install`.
 - `npm`: for Typescript development and running Node.js based tools with `npx`.

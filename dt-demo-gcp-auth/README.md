@@ -5,7 +5,7 @@ App-wide authentication using [JWT](https://en.wikipedia.org/wiki/JSON_Web_Token
 Creates a FastAPI server with the following key endpoints:
 
 - `login`: Login page with username and password prompt
-  - Uses `WSGIMiddleware` to host a `dash` webpage, [which requires Flask](https://fastapi.tiangolo.com/advanced/wsgi/)
+    - Uses `WSGIMiddleware` to host a `dash` webpage, [which requires Flask](https://fastapi.tiangolo.com/advanced/wsgi/)
 - `token`: Validates a login attempt and returns a JWT token
 - `user_management`: e.g. change password
 

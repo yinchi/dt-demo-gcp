@@ -1,15 +1,12 @@
-# Welcome to MkDocs
+# Documentation with MkDocs
 
-For full documentation visit [mkdocs.org](https://www.mkdocs.org).
+The developer documentation you are reading now is implemented using [MkDocs](https://www.mkdocs.org).  When building the Docker image using the `Dockerfile`, we use a multi-step build:
 
-This MkDocs template is based on <https://github.com/yinchi/yinchi.github.io>; refer to it for a fuller example of MkDocs usage.
+1. Copy the Markdown files and asset files to the builder container.
+2. Compile the Markdown files into HTML with `mkdocs build`.
+3. Copy the static files to the final image, which uses a tiny static webserver.
 
-## Commands
-
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs -h` - Print help message and exit.
+For local development, we can simply run MkDocs uncontainerized, using: `uv run mkdocs serve`.
 
 ## Project layout
 
@@ -19,6 +16,10 @@ docs/
     index.md  # The documentation homepage.
     ...       # Other markdown pages, images and other files.
 ```
+
+!!! warning
+
+    Only pages listed in the `nav` section of `mkdocs.yml` will be shown in the rendered output.
 
 ## Extensions demo
 
