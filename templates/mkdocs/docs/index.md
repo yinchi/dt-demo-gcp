@@ -64,4 +64,4 @@ The following extensions are also installed:
 
 * [Attribute Lists](https://python-markdown.github.io/extensions/attr_list/)
 * [SmartSymbols](https://facelessuser.github.io/pymdown-extensions/extensions/smartsymbols/)
-  * also, `smarty`
+    * also, `smarty`

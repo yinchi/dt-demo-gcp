@@ -4,3 +4,6 @@ MD013: false
 # Allow both fenced and indented code blocks as different extensions (e.g. `admonition`)
 # may expect different formats
 MD046: false
+
+# Set indentation for nested lists
+MD007: { indent: 4 }
