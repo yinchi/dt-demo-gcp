@@ -5,6 +5,7 @@ nav:
   - vscode.md
   - Architecture:
     - Overview: architecture/overview.md
+    - architecture/authentication.md
   - Miscellaneous:
     - mkdocs.md
 theme:
@@ -36,13 +37,21 @@ markdown_extensions:  # https://squidfunk.github.io/mkdocs-material/setup/extens
       anchor_linenums: true
       line_spans: __span
       pygments_lang_class: true
+  - pymdownx.highlight
   - pymdownx.inlinehilite
   - pymdownx.snippets
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      # make exceptions to highlighting of code:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:mermaid2.fence_mermaid_custom
   - pymdownx.details
   - pymdownx.arithmatex:
       generic: true
   - pymdownx.tasklist:
+plugins:
+  - mermaid2
 extra_css:
   - css/extra.css
 extra_javascript:

@@ -56,6 +56,8 @@ Migrating from Docker to Kubernetes requires migrating Traefik from using a Dock
 
 An alternative to the Gateway API is to use Traefik's own [Custom Resource Definitions](https://doc.traefik.io/traefik/routing/providers/kubernetes-crd/).
 
+To organize K8s resources into DT platform services, we will use [Helm charts](https://helm.sh/), which themselves can contain [subcharts](https://helm.sh/docs/chart_template_guide/subcharts_and_globals/#creating-a-subchart), thus creating a hierarchy of service groups and individual services.
+
 ## Google Cloud platform (GCP)
 
 (🚧 **TODO**)
