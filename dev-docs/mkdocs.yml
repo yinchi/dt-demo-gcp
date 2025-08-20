@@ -1,7 +1,12 @@
-site_name: My Docs
+site_name: Hospital DT Demo
 site_url: http://localhost/dev-docs/
 nav:
   - Home: index.md
+  - vscode.md
+  - Architecture:
+    - Overview: architecture/overview.md
+  - Miscellaneous:
+    - mkdocs.md
 theme:
   name: material
   palette:
@@ -37,6 +42,7 @@ markdown_extensions:  # https://squidfunk.github.io/mkdocs-material/setup/extens
   - pymdownx.details
   - pymdownx.arithmatex:
       generic: true
+  - pymdownx.tasklist:
 extra_css:
   - css/extra.css
 extra_javascript:
